@@ -1,0 +1,156 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    UserService.class: App\Service\UserService
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        public : false
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{Bridge,Entity,Migrations,Tests,Kernel.php}'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller/'
+        tags: ['controller.service_arguments']
+
+    em:
+        class: Doctrine\ORM\EntityManager
+        factory: ['@doctrine', 'getManager']
+
+    ###
+    #
+    #   RESOLVERS
+    #
+    ###
+    resolver.base:
+        class: App\Resolver\AbstractResolver
+        abstract: true
+        calls:
+            - [ init, ['@em']]
+
+    resolver.token:
+        class: App\Resolver\TokenResolver
+        parent: 'resolver.base'
+        public: true
+        autowire: true
+        autoconfigure: false
+
+    resolver.admin:
+        class: App\Resolver\AdminResolver
+        parent: 'resolver.base'
+        public: true
+        autowire: true
+        autoconfigure: false
+
+    resolver.user:
+        class: App\Resolver\UserResolver
+        parent: 'resolver.base'
+        public: true
+        autowire: true
+        autoconfigure: false
+
+    resolver.stats:
+        class: App\Resolver\StatsResolver
+        parent: 'resolver.base'
+        public: true
+        autowire: true
+        autoconfigure: false
+
+    resolver.settings:
+        class: App\Resolver\SettingsResolver
+        parent: 'resolver.base'
+        public: true
+        autowire: true
+        autoconfigure: false
+
+    resolver.roles:
+        class: App\Resolver\RolesResolver
+        parent: 'resolver.base'
+        public: true
+        autowire: true
+        autoconfigure: false
+
+    resolver.researchbar:
+        class: App\Resolver\ResearchBarResolver
+        parent: 'resolver.base'
+        public: true
+        autowire: true
+        autoconfigure: false
+
+    resolver.filter:
+        class: App\Resolver\FilterResolver
+        parent: 'resolver.base'
+        public: true
+        autowire: true
+        autoconfigure: false
+
+    resolver.export:
+        class: App\Resolver\ExportResolver
+        parent: 'resolver.base'
+        public: true
+        autowire: true
+        autoconfigure: false
+
+    resolver.company:
+        class: App\Resolver\CompanyResolver
+        parent: 'resolver.base'
+        public: true
+        autowire: true
+        autoconfigure: false
+
+    resolver.granularities:
+        class: App\Resolver\GranularitiesResolver
+        parent: 'resolver.base'
+        public: true
+        autowire: true
+        autoconfigure: false
+
+    resolver.graphics:
+        class: App\Resolver\GraphicsResolver
+        parent: 'resolver.base'
+        public: true
+        autowire: true
+        autoconfigure: false
+
+    ###
+    #
+    #   SERVICES
+    #
+    ###
+    UserService:
+        class: "%UserService.class%"
+        autowire: true
+        public: true
+
+    MiddlewareService:
+        class: App\Service\MiddlewareService
+        autowire: true
+        public: true
+
+    GlobalFilterService:
+        class: App\Service\GlobalFilterService
+        autowire: true
+        public: true
+
+    DateService:
+        class: App\Service\DateService
+        autowire: true
+        public: true
+
+
+    AcquisitionService:
+        class: App\Service\AcquisitionService
+        autowire: true
+        public: true

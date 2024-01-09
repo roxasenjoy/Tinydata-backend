@@ -1,0 +1,30 @@
+doctrine:
+    dbal:
+        default_connection: tinycoaching
+        connections:
+            tinycoaching:
+                # configure these for your database server
+                url: '%env(resolve:DATABASE_TINYCOACHING_URL)%'
+                driver: 'pdo_mysql'
+                server_version: '5.7'
+                charset: utf8mb4
+    orm:
+        auto_generate_proxy_classes: true
+        
+        default_entity_manager: tinycoaching
+        entity_managers:
+            tinycoaching:
+                connection: tinycoaching
+                naming_strategy: doctrine.orm.naming_strategy.underscore
+                mappings:
+                    tinycoaching:
+                        is_bundle: false
+                        type: annotation
+                        dir: '%kernel.project_dir%/src/Entity'
+                        prefix: 'App\Entity'
+                        alias: TinyCoaching
+                dql:
+                    string_functions:
+                        DAY: DoctrineExtensions\Query\Mysql\Day
+                        MONTH: DoctrineExtensions\Query\Mysql\Month
+                        YEAR: DoctrineExtensions\Query\Mysql\Year

@@ -1,0 +1,33 @@
+security:
+    encoders:
+        App\Entity\User:
+            algorithm: bcrypt
+    # https://symfony.com/doc/current/security.html#where-do-users-come-from-user-providers
+    providers:
+        users_in_memory: { memory: null }
+    firewalls:
+        dev:
+            pattern: ^/(_(profiler|wdt)|css|images|js)/
+            security: false
+                
+        secured_api:
+            pattern: ^/graphql
+            anonymous: true
+            stateless: true
+            guard:
+                authenticators:
+                    - App\Security\TokenAuthenticator
+
+        main:
+            anonymous: lazy
+            provider: users_in_memory
+
+    role_hierarchy:
+        ROLE_TINYDATA:      [ROLE_TINYDATA]                                                         # Administrateur Tinydata
+        ROLE_USER_ADMIN:    [ROLE_USER_ADMIN, ROLE_TINYDATA]                                        # Administrateurs client
+        ROLE_SU_CLIENT:     [ROLE_SU_CLIENT, ROLE_USER_ADMIN, ROLE_TINYDATA]                        # Super-Administrateurs client
+        ROLE_ADMIN:         [ROLE_ADMIN, ROLE_SU_CLIENT, ROLE_USER_ADMIN, ROLE_TINYDATA]            # SuperAdministrateur tinycoaching
+        ROLE_SU:            [ROLE_SU, ROLE_ADMIN, ROLE_SU_CLIENT, ROLE_USER_ADMIN, ROLE_TINYDATA]   # Utilisateur racine tiny@tiny-coaching.com
+    # access_control:
+    #   - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+    #   - { path: ^/admin, roles: [ROLE_ADMIN, ROLE_USER_ADMIN] }

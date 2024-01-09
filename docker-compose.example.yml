@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+    php:
+        build:
+            context: .
+            dockerfile: docker/php/Dockerfile
+        volumes:
+            - './app/:/usr/src/app'
+        environment: 
+            - APP_ENV=dev
+            - APP_SECRET=3358eef7c3e2b9ae6d856c733ac11e58
+            
+            - DATABASE_TINYCOACHING_URL=mysql://root:root@127.0.0.1:3306/db_name?serverVersion=5.7
+            - DATABASE_TINYDATA_URL=mysql://root:root@127.0.0.1:3306/db_name?serverVersion=5.7
+            
+            - AUTH_API_URL=https://pp-admin.tiny-coaching.com/graphql
+            - TINYCOACHING_TOKEN=longStringToken
+
+            - JWT_SECRET_KEY=%kernel.project_dir%/config/jwt/private.pem
+            - JWT_PUBLIC_KEY=%kernel.project_dir%/config/jwt/public.pem
+            - JWT_PASSPHRASE=tinyjwt
+
+    nginx:
+        image: nginx:1.19.0-alpine
+        volumes:
+            - './app/public/:/usr/src/app'
+            - './docker/nginx/default.conf:/etc/nginx/conf.d/default.conf:ro'
+        ports:
+            - '8081:80'
+        depends_on:
+            - php
